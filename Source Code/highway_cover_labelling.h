@@ -1,23 +1,14 @@
 #ifndef HGHWAY_LABELING_H_
 #define HGHWAY_LABELING_H_
 
-#include <stdint.h>
 #include <sys/time.h>
-#include <cstdlib>
-#include <cmath>
 #include <iostream>
-#include <thread>
-#include <sstream>
 #include <string>
 #include <vector>
-#include <set>
-#include <math.h>
 #include <queue>
-#include <unordered_map>
 #include <map>
 #include <algorithm>
 #include <fstream>
-#include <utility>
 
 #include "two_layer_queue.h"
 
@@ -39,7 +30,7 @@ class HighwayLabelling {
   void allocate();
 
   void UpdateLabelling(std::string filename);
-  void IncHL(int i, uint8_t *A, uint8_t *temp, int b, uint8_t d);
+  void IncHL_Plus(int i, uint8_t *A, uint8_t *temp, int b, uint8_t d);
   bool prunable(int i, int u, uint8_t *temp, uint8_t *P);
 
   void SelectLandmarks_HD(int topk[]);
@@ -72,12 +63,6 @@ class HighwayLabelling {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return tv.tv_sec + tv.tv_usec * 1e-6;
-  }
-
-  long GetCurrentTimeMicroSec() {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec * (uint64_t) 1e6 + tv.tv_usec;
   }
 
   long GetCurrentTimeMilliSec() {
@@ -188,12 +173,8 @@ void HighwayLabelling::ConstructHighwayLabelling(int i, int topk[]) {
     }
   }
 
-  for(int j = 0; j < K; j++) {
-    if(P[topk[j]] != 111) {
-      highway[i][j] = P[topk[j]];
-      highway[j][i] = P[topk[j]];
-    }
-  }
+  for(int j = 0; j < K; j++)
+    highway[i][j] = P[topk[j]];
 
   delete [] P;
 }
@@ -233,9 +214,9 @@ void HighwayLabelling::UpdateLabelling(std::string filename) {
       int db = query(i, b);
 
       if(da > db) {
-        IncHL(i, A, temp, a, db + 1);
+        IncHL_Plus(i, A, temp, a, db + 1);
       } else if(da < db) {
-        IncHL(i, A, temp, b, da + 1);
+        IncHL_Plus(i, A, temp, b, da + 1);
       }
     }
   }
@@ -248,7 +229,7 @@ void HighwayLabelling::UpdateLabelling(std::string filename) {
   delete [] A;
 }
 
-void HighwayLabelling::IncHL(int i, uint8_t *A, uint8_t *temp, int b, uint8_t dist) {
+void HighwayLabelling::IncHL_Plus(int i, uint8_t *A, uint8_t *temp, int b, uint8_t dist) {
 
   // finding affected vertices
   std::queue<int> que[2];
@@ -442,17 +423,12 @@ void HighwayLabelling::QueryDistance(std::string pairs, std::string output) {
 
   std::cout << "Average Query Time (ms) : " << (double) time_querying_millisec_ / total << std::endl;
 
-  for(int i = 0; i < V; i++) {
-    delete [] distances[i];
+  // Free memory
+  deallocate();
+  for(int i = 0; i < V; i++)
     delete [] vertices[i];
-  }
-  delete [] distances;
   delete [] vertices;
   delete [] C;
-
-  for(int i = 0; i < K; i++)
-    delete [] highway[i];
-  delete [] highway;
 }
 
 void HighwayLabelling::SelectLandmarks_HD(int topk[]) {
@@ -562,4 +538,4 @@ void HighwayLabelling::loadLabelling_Pruned(std::string filename) {
   ifs.close();
 }
 
-#endif  // PRUNED_LANDMARK_LABELING_H_
+#endif  // HGHWAY_LABELING_H_
