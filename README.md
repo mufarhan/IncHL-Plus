@@ -8,7 +8,7 @@ The format of the dataset text file is as follows: <br/>
 Line 1 : |V| |E| <br/>
 Line 2 : vertex_u deg_u v1 ... vn, where v1 to vn are neighbors of u. Note that the vertex id are from 0 to (V-1), where V is the number of vertices. There are no self loops in the graph, i.e., no edge from any vertex to itself. 
 
-Please use the following commands to test FulHL.
+Please use the following commands to test IncHL_Plus.
 
 ## 1 - Compile source files
 
