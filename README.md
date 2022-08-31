@@ -1,4 +1,4 @@
-## IncHL^+
+## IncHL+
 This is an implementation of the paper<br/>
 
 Muhammad Farhan and Qing Wang, **[Efficient Maintenance of Distance Labelling for Incremental Updates in Large Dynamic Graphs.](https://arxiv.org/abs/2102.08529)**
